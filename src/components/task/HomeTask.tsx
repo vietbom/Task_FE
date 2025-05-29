@@ -6,6 +6,7 @@ import { useTaskStore } from "../../apis/Task"
 import { useAuthStore } from "../../apis/Auth"
 import { useNavigate } from "react-router-dom"
 import DetailTask from "./DetailTask"
+import type { Task } from "../../apis/Task"
 
 const HomeTask: React.FC = () => {
     const { user } = useAuthStore()
@@ -37,12 +38,13 @@ const HomeTask: React.FC = () => {
         setCurrentDate(new Date())
     }
 
-    const startOfDay = (dateStr: string) => new Date(dateStr + 'T00:00:00')
-    const endOfDay = (dateStr: string) => new Date(dateStr + 'T23:59:59')
+    const startOfDay = (date: Date) => new Date(date.setHours(0, 0, 0, 0))
+    const endOfDay = (date: Date) => new Date(date.setHours(23, 59, 59, 999))
+
 
     const handleDeleteTask = (taskId: number) => {
         if (!user?.id) return
-        deleteTask(user.id.toString(), taskId)
+        deleteTask(user.id.toString(), taskId.toString())
     }
 
     return (
@@ -99,8 +101,8 @@ const HomeTask: React.FC = () => {
                             return isWithinInterval(day, { start, end: due })
                         })
 
-                        const isTaskStart = (task) => isSameDay(startOfDay(task.startDate), day)
-                        const isTaskEnd = (task) => isSameDay(endOfDay(task.dueDate), day)
+                        const isTaskStart = (task: Task) => isSameDay(startOfDay(task.startDate), day)
+                        const isTaskEnd = (task: Task) => isSameDay(endOfDay(task.dueDate), day)
 
                         return (
                             <div
@@ -149,14 +151,15 @@ const HomeTask: React.FC = () => {
                                                     ? "rounded-r"
                                                     : ""
                                                 }`}
-                                            title={task.titleTask}
-                                            onClick={() => setSelectedTask(task)}                                            onMouseEnter={() => setHoveredTaskId(task.id)}
+                                            title={task.titleTask || ""}
+                                            onClick={() => setSelectedTask(task)}                                            
+                                            onMouseEnter={() => setHoveredTaskId(Number(task.id))}
                                             onMouseLeave={() => setHoveredTaskId(null)}
                                         >
                                         {start ? task.titleTask : ""}
-                                        {hoveredTaskId === task.id && (
+                                        {hoveredTaskId === Number(task.id) && (
                                             <button
-                                                onClick={() => handleDeleteTask(task.id)}
+                                                onClick={() => handleDeleteTask(Number(task.id))}
                                                 className="ml-2 text-white hover:text-red-300"
                                                 title="Delete task"
                                             >

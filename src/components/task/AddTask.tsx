@@ -3,7 +3,7 @@ import { useTaskStore } from "../../apis/Task"
 import { useAuthStore } from "../../apis/Auth"
 import { X, Plus, Trash2 } from "lucide-react"
 import { useLocation, useNavigate } from "react-router-dom"
-import { format, parseISO } from "date-fns"
+import {  parseISO } from "date-fns"
 
 interface Note {
   id: string
@@ -91,8 +91,8 @@ const AddTask: React.FC = () => {
 
     createTask(user.id.toString(), {
       ...formData,
-      startDate: format(parseISO(formData.startDate), "dd-MM-yyyy"),
-      dueDate: format(parseISO(formData.dueDate), "dd-MM-yyyy"),
+      startDate: parseISO(formData.startDate),
+      dueDate: parseISO(formData.dueDate),
       note: [...notes.map(note => note.content), ...(currentNote.trim() ? [currentNote.trim()] : [])]
     })
 

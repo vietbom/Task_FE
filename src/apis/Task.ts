@@ -1,7 +1,7 @@
 import { create } from "zustand"
 import { axiosInstance } from "../lib/axios"
 
-interface Task {
+export interface Task {
   id?: string
   titleTask: string | null
   description: string | null
@@ -24,6 +24,8 @@ interface TaskState {
   createTask: (userId: string, data: Task) => Promise<void>
   getTask: (userId: string) => Promise<void>
   deleteTask: (userId: string, taskId: string) => Promise<void>
+  addNote: (userId: string, taskId: number, note: string) => Promise<void>
+  completedTask: (userId: string, taskId: number) => Promise<void>
 }
 
 export const useTaskStore = create<TaskState>((set) => ({
@@ -73,10 +75,10 @@ export const useTaskStore = create<TaskState>((set) => ({
     }
   },
 
-  addNote: async(userId, taskId, note) => {
+  addNote: async (userId: string, taskId: number, note: string) => {
     set({loading: true})
     try {
-      await axiosInstance.post(`/task/noteTask/${userId}/${taskId}`, {note})
+      const res = await axiosInstance.post(`/task/noteTask/${userId}/${taskId}`, {note})
       set((state) => ({
         tasks: [...state.tasks, res.data.task],
         loading: false
@@ -86,10 +88,10 @@ export const useTaskStore = create<TaskState>((set) => ({
     }
   },
 
-  completedTask: async (userId, taskId) => {
+  completedTask: async (userId: string, taskId: number) => {
     set({ loading: true })
     try {
-      await axiosInstance.post(`/task/completedTask/${userId}/${taskId}`)
+      const res = await axiosInstance.post(`/task/completedTask/${userId}/${taskId}`)
       set((state) => ({
         tasks: [...state.tasks, res.data.task],
         loading: false

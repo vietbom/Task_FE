@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { CalendarIcon, Plus, Trash2, X, Check } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../apis/Auth";
 import { useTaskStore } from "../../apis/Task";
+import type { Task } from "../../apis/Task"
 
-interface Task {
-  id: number;
-  titleTask: string;
-  description: string;
-  note: string[];
-  priority: string;
-  startDate: string;
-  dueDate: string;
-  status?: string;
-  completed?: boolean;
-}
+// interface Task {
+//   id: number;
+//   titleTask: string;
+//   description: string;
+//   note: string[];
+//   priority: string;
+//   startDate: string;
+//   dueDate: string;
+//   status?: string;
+//   completed?: boolean;
+// }
 
 interface DetailTaskProps {
   task: Task;
@@ -26,7 +26,6 @@ const DetailTask: React.FC<DetailTaskProps> = ({ task, onClose }) => {
   const { addNote, deleteTask, getTask, completedTask} = useTaskStore();
   const [newNote, setNewNote] = useState("");
   const [isAddingNote, setIsAddingNote] = useState(false);
-  const navigate = useNavigate();
 
   const notes = Array.isArray(task.note)
     ? task.note
@@ -36,7 +35,7 @@ const DetailTask: React.FC<DetailTaskProps> = ({ task, onClose }) => {
 
   const handleDeleteTask = async (taskId: number) => {
     if (!user?.id) return;
-    await deleteTask(user.id.toString(), taskId);
+    await deleteTask(user.id.toString(), taskId.toString());
     onClose();
   };
 
@@ -44,7 +43,7 @@ const DetailTask: React.FC<DetailTaskProps> = ({ task, onClose }) => {
     if (!newNote.trim() || !user?.id) return;
     
     try {
-      await addNote(user.id.toString(), task.id, newNote);
+      await addNote(user.id.toString(), Number(task.id), newNote);
       await getTask(user.id.toString())
       setNewNote("");
       setIsAddingNote(false);
@@ -60,7 +59,8 @@ const DetailTask: React.FC<DetailTaskProps> = ({ task, onClose }) => {
     }, [user, getTask])
 
     const handleCompletedTask = async() => {
-        await completedTask(user.id.toString(), task.id)
+       if (!user) return
+        await completedTask(user.id.toString(), Number(task.id))
         await getTask(user.id.toString())
     }
   
@@ -104,7 +104,7 @@ const DetailTask: React.FC<DetailTaskProps> = ({ task, onClose }) => {
               <CalendarIcon size={16} className="text-gray-500 mt-1" />
               <div>
                 <h3 className="font-medium text-gray-700">Start Date</h3>
-                <p className="text-gray-600">{task.startDate}</p>
+                <p className="text-gray-600">{new Date(task.startDate).toLocaleDateString()}</p>
               </div>
             </div>
 
@@ -112,7 +112,7 @@ const DetailTask: React.FC<DetailTaskProps> = ({ task, onClose }) => {
               <CalendarIcon size={16} className="text-gray-500 mt-1" />
               <div>
                 <h3 className="font-medium text-gray-700">Due Date</h3>
-                <p className="text-gray-600">{task.dueDate}</p>
+                <p className="text-gray-600">{new Date(task.dueDate).toLocaleDateString()}</p>
               </div>
             </div>
           </div>
@@ -157,7 +157,7 @@ const DetailTask: React.FC<DetailTaskProps> = ({ task, onClose }) => {
 
           <div className="flex justify-between pt-4 border-t">
             <button
-              onClick={() => handleDeleteTask(task.id)}
+              onClick={() => handleDeleteTask(Number(task.id))}
               className="flex items-center text-red-600 hover:text-red-700"
             >
               <Trash2 size={16} className="mr-1" />
