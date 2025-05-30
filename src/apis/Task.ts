@@ -7,8 +7,8 @@ export interface Task {
   description: string | null
   note: string[]
   priority: string | null
-  startDate: Date
-  dueDate: Date
+  startDate: string | Date
+  dueDate: string | Date
   status?: string
   completed?: boolean
   userId?: string

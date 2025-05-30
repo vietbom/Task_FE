@@ -73,7 +73,7 @@ function App() {
           />
 
           <Route
-            path="/task/addTask"
+            path="/task/createTask"
             element={
               isAuthenticated ? (
                 <AddTask/>
