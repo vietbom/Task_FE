@@ -9,7 +9,7 @@ import DetailTask from "./DetailTask"
 import type { Task } from "../../apis/Task"
 
 const HomeTask: React.FC = () => {
-    const { user, checkAuth} = useAuthStore()
+    const { user} = useAuthStore()
     const { getTask, tasks, deleteTask } = useTaskStore()
     const [hoveredTaskId, setHoveredTaskId] = useState<number | null>(null)
     const [currentDate, setCurrentDate] = useState(new Date())
@@ -30,13 +30,13 @@ const HomeTask: React.FC = () => {
 
     useEffect(() => {
         const fetch = async () => {
-            await checkAuth()
+            //await checkAuth()
             if (user?.id) {
             getTask(user.id.toString());
             }
         };
         fetch()
-    }, [checkAuth, getTask, user?.id])
+    }, [getTask, user?.id])
 
     const goToPreviousMonth = () => {
         setCurrentDate(subMonths(currentDate, 1))
