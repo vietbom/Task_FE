@@ -9,7 +9,7 @@ import DetailTask from "./DetailTask"
 import type { Task } from "../../apis/Task"
 
 const HomeTask: React.FC = () => {
-    const { user, checkAuth} = useAuthStore()
+    const { user} = useAuthStore()
     const { getTask, tasks, deleteTask } = useTaskStore()
     const [hoveredTaskId, setHoveredTaskId] = useState<number | null>(null)
     const [currentDate, setCurrentDate] = useState(new Date())
@@ -22,24 +22,11 @@ const HomeTask: React.FC = () => {
     const emptyDays = Array.from({ length: startDay === 0 ? 6 : startDay - 1 }, () => null)
 
     const navigate = useNavigate()
-    // useEffect(() => {
-    //     if (user?.id) {
-    //         getTask(user.id.toString())
-    //     }
-    // }, [user, getTask])
-
     useEffect(() => {
-        const fetchData = async () => {
-            await checkAuth() 
-            const currentUser = useAuthStore.getState().user
-            if (currentUser?.id) {
-            await getTask(currentUser.id.toString())
-            }
+        if (user?.id) {
+            getTask(user.id.toString())
         }
-
-        fetchData()
-    }, [checkAuth, getTask])
-
+    }, [user, getTask])
 
     const goToPreviousMonth = () => {
         setCurrentDate(subMonths(currentDate, 1))
