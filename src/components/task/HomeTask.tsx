@@ -27,7 +27,7 @@ const HomeTask: React.FC = () => {
     //         getTask(user.id.toString())
     //     }
     // }, [user, getTask])
-
+    console.log('start get Task: ', user?.id)
     useEffect(() => {
         const fetch = async () => {
             //await checkAuth()
