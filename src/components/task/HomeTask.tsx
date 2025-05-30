@@ -38,9 +38,17 @@ const HomeTask: React.FC = () => {
         setCurrentDate(new Date())
     }
 
-    const startOfDay = (date: Date) => new Date(date.setHours(0, 0, 0, 0))
-    const endOfDay = (date: Date) => new Date(date.setHours(23, 59, 59, 999))
+    const startOfDay = (date: Date | string) => {
+        const d = new Date(date);
+        d.setHours(0, 0, 0, 0);
+        return d;
+    }
 
+    const endOfDay = (date: Date | string) => {
+        const d = new Date(date);
+        d.setHours(23, 59, 59, 999);
+        return d;
+    }
 
     const handleDeleteTask = (taskId: number) => {
         if (!user?.id) return

@@ -90,8 +90,8 @@ const AddTask: React.FC = () => {
 
     createTask(user.id.toString(), {
       ...formData,
-      startDate: new Date(formData.startDate), 
-      dueDate: new Date(formData.dueDate),
+      startDate: new Date(formData.startDate).toISOString(), 
+      dueDate: new Date(formData.dueDate).toISOString(),
       note: [...notes.map(note => note.content), ...(currentNote.trim() ? [currentNote.trim()] : [])]
     })
 
