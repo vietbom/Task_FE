@@ -83,6 +83,8 @@ export const useAuthStore = create(
           //   throw new Error("Dữ liệu người dùng không hợp lệ");
           // }
 
+          console.log('User Id:', res.data.userId)
+
           set({
             user: userData,
             isAuthenticated: true,

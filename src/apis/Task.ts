@@ -52,6 +52,7 @@ export const useTaskStore = create<TaskState>((set) => ({
   getTask: async (userId) => {
     set({ loading: true })
     try {
+      console.log('Lay Task cua user: ', userId)
       const res = await axiosInstance.get(`/task/getTask/${userId}`)
       console.log('Tasks nhận được:', res.data)
       set({ tasks: res.data.tasks, loading: false })
