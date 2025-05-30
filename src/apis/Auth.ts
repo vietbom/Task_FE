@@ -8,6 +8,17 @@ interface User {
   email: string;
 }
 
+const isValidUser = (user: any): user is User => {
+  return (
+    user &&
+    typeof user.id === 'number' &&
+    typeof user.userName === 'string' &&
+    typeof user.email === 'string' &&
+    user.userName.length > 0 &&
+    user.email.length > 0
+  );
+};
+
 interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
@@ -39,6 +50,10 @@ export const useAuthStore = create(
       signUp: async (userName, email, password) => {
         set({ signUpLoading: true, error: null });
         try {
+          if (!userName || !email || !password) {
+            throw new Error("Vui lòng điền đầy đủ thông tin");
+          }
+
           await axiosInstance.post("/user/signUp", { userName, email, password });
           set({ signUpLoading: false });
         } catch (error: any) {
@@ -54,46 +69,19 @@ export const useAuthStore = create(
         }
       },
 
-      // signIn: async (email, password) => {
-      //   set({ signInLoading: true, error: null });
-      //   try {
-      //     const res = await axiosInstance.post("/user/signIn", { email, password });
-      //     const userData: User = res.data;
-
-      //     if (!userData?.id) {
-      //       throw new Error("Dữ liệu người dùng không hợp lệ");
-      //     }
-
-      //     set({
-      //       user: userData,
-      //       isAuthenticated: true,
-      //       signInLoading: false,
-      //       error: null,
-      //     });
-      //   } catch (error: any) {
-      //     const errorMessage =
-      //       error.response?.data?.message ||
-      //       error.message ||
-      //       "Đăng nhập thất bại. Vui lòng thử lại!";
-      //     set({
-      //       user: null,
-      //       isAuthenticated: false,
-      //       signInLoading: false,
-      //       error: errorMessage,
-      //     });
-      //     throw new Error(errorMessage);
-      //   }
-      // },
-
       signIn: async (email, password) => {
         set({ signInLoading: true, error: null });
         try {
-          const res = await axiosInstance.post("/user/signIn", { email, password });
-          const { user: userData } = res.data; // <-- sửa ở đây
-
-          if (!userData?.id) {
-            throw new Error("Dữ liệu người dùng không hợp lệ");
+          if (!email || !password) {
+            throw new Error("Vui lòng điền đầy đủ thông tin");
           }
+
+          const res = await axiosInstance.post("/user/signIn", { email, password });
+          const userData = res.data;
+
+          // if (!isValidUser(userData)) {
+          //   throw new Error("Dữ liệu người dùng không hợp lệ");
+          // }
 
           set({
             user: userData,
@@ -120,9 +108,9 @@ export const useAuthStore = create(
         set({ loading: true, error: null });
         try {
           const res = await axiosInstance.get("/user/checkAuth");
-          const userData: User = res.data;
+          const userData = res.data;
 
-          if (!userData?.id) {
+          if (!isValidUser(userData)) {
             throw new Error("Dữ liệu người dùng không hợp lệ");
           }
 
@@ -133,11 +121,15 @@ export const useAuthStore = create(
             error: null,
           });
         } catch (error: any) {
+          const errorMessage =
+            error.response?.data?.message ||
+            error.message ||
+            "Phiên đăng nhập đã hết hạn";
           set({
             user: null,
             isAuthenticated: false,
             loading: false,
-            error: null,
+            error: errorMessage,
           });
         }
       },
@@ -167,7 +159,7 @@ export const useAuthStore = create(
     }),
     {
       name: "auth-storage",
-      storage: createJSONStorage(() => localStorage), 
+      storage: createJSONStorage(() => localStorage),
     }
   )
 );
