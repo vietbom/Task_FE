@@ -54,11 +54,42 @@ export const useAuthStore = create(
         }
       },
 
+      // signIn: async (email, password) => {
+      //   set({ signInLoading: true, error: null });
+      //   try {
+      //     const res = await axiosInstance.post("/user/signIn", { email, password });
+      //     const userData: User = res.data;
+
+      //     if (!userData?.id) {
+      //       throw new Error("Dữ liệu người dùng không hợp lệ");
+      //     }
+
+      //     set({
+      //       user: userData,
+      //       isAuthenticated: true,
+      //       signInLoading: false,
+      //       error: null,
+      //     });
+      //   } catch (error: any) {
+      //     const errorMessage =
+      //       error.response?.data?.message ||
+      //       error.message ||
+      //       "Đăng nhập thất bại. Vui lòng thử lại!";
+      //     set({
+      //       user: null,
+      //       isAuthenticated: false,
+      //       signInLoading: false,
+      //       error: errorMessage,
+      //     });
+      //     throw new Error(errorMessage);
+      //   }
+      // },
+
       signIn: async (email, password) => {
         set({ signInLoading: true, error: null });
         try {
           const res = await axiosInstance.post("/user/signIn", { email, password });
-          const userData: User = res.data;
+          const { user: userData } = res.data; // <-- sửa ở đây
 
           if (!userData?.id) {
             throw new Error("Dữ liệu người dùng không hợp lệ");
